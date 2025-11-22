@@ -262,7 +262,7 @@ yarn test test/DualFlashLoan.test.ts
 | Feature | Single FlashLoan | DualFlashLoan |
 |---------|-----------------|---------------|
 | Tokens per loan | 1 | 2 |
-| Gas Cost | ~95k | **128k** |
+| Gas Cost | **79k** | **128k** |
 | Sequential (2 tokens) | ~200k | N/A |
 | Savings vs Sequential | - | **36%** |
 | Balance check | rawBalances | safeBalances (optimized) |

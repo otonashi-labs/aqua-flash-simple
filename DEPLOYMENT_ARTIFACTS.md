@@ -68,7 +68,7 @@ All contracts fully verified with complete metadata:
 |----------|----------------|---------------|
 | **DualFlashLoan** | 994,813 | ~128,207 per flash loan |
 | **DualFlashLoanExecutor** | 671,403 | - |
-| **FlashLoan** | ~1,500,000 | ~95,000 per flash loan |
+| **FlashLoan** | ~1,500,000 | ~79,144 per flash loan |
 | **FlashLoanExecutor** | ~800,000 | - |
 | **Aqua** | ~2,000,000 | ~200,000 (ship) |
 | **XYCSwap** | ~1,000,000 | varies |
@@ -192,8 +192,8 @@ Execution Time: 573ms
 | Operation | Gas Used | vs Alternative |
 |-----------|----------|----------------|
 | **DualFlashLoan** | **128,207** | -36% vs 2x Single |
-| FlashLoan (Single) | 95,000 | -37% vs SwapVM |
-| 2x Sequential FlashLoan | 200,000 | baseline |
+| FlashLoan (Single) | **79,144** | -47% vs SwapVM |
+| 2x Sequential FlashLoan | ~200,000 | baseline (includes TX overhead) |
 | SwapVM-based (theoretical) | ~150,000 | reference |
 
 ### Key Metrics
@@ -201,7 +201,7 @@ Execution Time: 573ms
 | Metric | DualFlashLoan | FlashLoan |
 |--------|---------------|-----------|
 | Contract Size | 147 lines | 139 lines |
-| Gas per Operation | 128,207 | 95,000 |
+| Gas per Operation | 128,207 | 79,144 |
 | Tokens per Call | 2 | 1 |
 | Test Coverage | 29 tests | 23 tests |
 | Verification | ✅ Dual | ✅ Dual |

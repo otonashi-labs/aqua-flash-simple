@@ -1,14 +1,14 @@
 # Gas-Optimized Flash Loans on Aqua Protocol
 
-Production-ready flash loan implementations achieving **37% gas savings** through direct Aqua integration, with both single-token and dual-token variants.
+Production-ready flash loan implementations achieving **up to 47% gas savings** through direct Aqua integration, with both single-token and dual-token variants.
 
 ## Overview
 
 This project implements flash loans using the 1inch Aqua protocol with a direct pull/push mechanism, avoiding the complexity and gas overhead of bytecode construction. The result is simple, auditable implementations that maintain full security guarantees while being significantly more efficient.
 
 **Key Achievements:**
-- **FlashLoan**: Single-token flash loans in ~95,000 gas (37% savings vs SwapVM)
-- **DualFlashLoan**: Dual-token flash loans in ~128,000 gas (36% savings vs sequential)
+- **FlashLoan**: Single-token flash loans in **79,144 gas** (47% savings vs SwapVM)
+- **DualFlashLoan**: Dual-token flash loans in **128,207 gas** (36% savings vs sequential)
 
 ## Motivation
 
@@ -41,8 +41,8 @@ By leveraging Aqua's liquidity infrastructure, this implementation makes flash l
 All contracts verified on both **Etherscan** and **Sourcify** for maximum transparency.
 
 **On-Chain Proofs:**
-- FlashLoan execution: ~95,000 gas
-- DualFlashLoan execution: [128,207 gas](https://sepolia.etherscan.io/tx/0x45bed7f1b7cb978f503697f2909bea04b2f829e280436a3d5afe6c10b2c5c44c)
+- FlashLoan execution: [79,144 gas](https://sepolia.etherscan.io/tx/0x19a4d3c53b45ed92ce3897624cac664c8e5d0d607d01c8cb304cf4332c63dadd)
+- DualFlashLoan execution: [128,207 gas](https://sepolia.etherscan.io/tx/0x45bed7f1b7cb978f503697f2909bea04b2f829e280436a3d5afe6c10b2c5c44c) for 2 flash loans!
 
 ## Implementation Approach
 
@@ -81,8 +81,8 @@ IDualFlashLoanReceiver(receiver).executeDualFlashLoan(...);
 
 | Implementation | Gas Usage | vs Alternative | Use Case |
 |----------------|-----------|----------------|----------|
-| **FlashLoan** | **~95,000** | -37% vs SwapVM | Single token operations |
-| **DualFlashLoan** | **~128,000** | -36% vs 2x sequential | Multi-token arbitrage |
+| **FlashLoan** | **79,144** | -47% vs SwapVM | Single token operations |
+| **DualFlashLoan** | **128,207** | -36% vs 2x sequential | Multi-token arbitrage |
 | SwapVM-based | ~150,000 | baseline | (theoretical) |
 | 2x Sequential FlashLoan | ~200,000 | baseline | Two separate calls |
 
@@ -364,7 +364,7 @@ npx hardhat deploy --network sepolia --tags DualFlashLoan
    - SwapVM: Multiple callback hooks (pre/post transfer)
    - Direct: One callback function
 
-**Total Savings: ~55,000 gas per flash loan (37% reduction)**
+**Total Savings: ~70,856 gas per flash loan (47% reduction)**
 
 ### DualFlashLoan (Two Tokens)
 
