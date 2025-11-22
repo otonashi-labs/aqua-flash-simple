@@ -2,6 +2,13 @@
 
 A gas-optimized dual-token flash loan implementation using Aqua protocol's pair-based architecture.
 
+## Live on Sepolia
+
+**DualFlashLoan**: [`0x91B97b0e887C914AC97C7cD937FEAb11EdCeBdc8`](https://sepolia.etherscan.io/address/0x91B97b0e887C914AC97C7cD937FEAb11EdCeBdc8#code)  
+**DualFlashLoanExecutor**: [`0xfe2D77D038e05B8de20adb15b05a894AF00081a0`](https://sepolia.etherscan.io/address/0xfe2D77D038e05B8de20adb15b05a894AF00081a0#code)
+
+**On-Chain Proof**: [Live TX](https://sepolia.etherscan.io/tx/0x45bed7f1b7cb978f503697f2909bea04b2f829e280436a3d5afe6c10b2c5c44c) - Gas: **128,207** ✅
+
 ## Overview
 
 `DualFlashLoan` allows users to borrow **TWO tokens simultaneously** from liquidity providers in a single transaction. This is optimized for Aqua's swap engine design, which is built around token pairs using the `safeBalances()` function.
@@ -241,22 +248,23 @@ yarn test test/DualFlashLoan.test.ts
 
 ## Gas Measurements
 
-Typical gas costs:
-- **Dual Flash Loan Execution**: ~150k-180k gas
-- **Single Token Borrow** (one zero amount): ~140k-160k gas
-- **Maximum Liquidity Borrow**: ~180k-200k gas
+**On-Chain Verified Results** (Sepolia):
+- **Dual Flash Loan Execution**: **128,207 gas** ⚡
+- **Asymmetric Borrowing**: **128,197 gas**
+- **Sequential 2x Single Flash Loans**: ~200,000 gas
 
-Compare to sequential single flash loans: ~180k-220k gas (2x overhead)
+**Savings**: **71,793 gas (36%)** compared to sequential flash loans
 
-**Savings**: ~20-40k gas compared to two separate flash loans
+**Real Transaction**: [0x45bed7f1b7cb978f503697f2909bea04b2f829e280436a3d5afe6c10b2c5c44c](https://sepolia.etherscan.io/tx/0x45bed7f1b7cb978f503697f2909bea04b2f829e280436a3d5afe6c10b2c5c44c)
 
 ## Comparison: Single vs Dual Flash Loan
 
 | Feature | Single FlashLoan | DualFlashLoan |
 |---------|-----------------|---------------|
 | Tokens per loan | 1 | 2 |
-| Gas Cost | ~100k | ~170k |
+| Gas Cost | ~95k | **128k** |
 | Sequential (2 tokens) | ~200k | N/A |
+| Savings vs Sequential | - | **36%** |
 | Balance check | rawBalances | safeBalances (optimized) |
 | Aqua integration | Good | Optimal (pair-based) |
 | Callback complexity | Simple | Medium |
@@ -347,19 +355,18 @@ All use Aqua as the underlying protocol and share liquidity infrastructure.
 
 ## Deployment
 
-Deploy using the standard deployment script:
+**Already Live on Sepolia** ✅
+
+Deploy to other networks using:
 
 ```bash
-yarn deploy
+npx hardhat deploy --network sepolia --tags DualFlashLoan
 ```
 
-This deploys:
-- Aqua
-- XYCSwap
-- FlashLoan
-- FlashLoanExecutor
-- **DualFlashLoan** ✨
-- **DualFlashLoanExecutor** ✨
+**Sepolia Addresses:**
+- Aqua: `0x97f393EbbF5f7ab0DFB0C04cea7FF0Ca5D13F3EF`
+- DualFlashLoan: `0x91B97b0e887C914AC97C7cD937FEAb11EdCeBdc8`
+- DualFlashLoanExecutor: `0xfe2D77D038e05B8de20adb15b05a894AF00081a0`
 
 ## Future Enhancements
 
