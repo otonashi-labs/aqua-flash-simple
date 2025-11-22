@@ -1,0 +1,109 @@
+=================================================================
+             ENVIRONMENT SETUP FOR SEPOLIA DEPLOYMENT
+=================================================================
+
+STEP 1: Create .env file
+-------------------------
+Create a file named ".env" in the project root with this content:
+
+# Network Configuration
+SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_KEY
+PRIVATE_KEY=your_private_key_without_0x_prefix
+ETHERSCAN_API_KEY=your_etherscan_api_key
+
+# Optional
+TEST_TOKEN_ADDRESS=
+DEPLOY_RESOLVER=false
+
+
+STEP 2: Get Required Keys
+--------------------------
+
+A. Alchemy RPC URL (Recommended)
+   1. Go to: https://dashboard.alchemy.com/
+   2. Sign up / Log in
+   3. Create a new app
+   4. Select "Ethereum" chain
+   5. Select "Sepolia" network
+   6. Copy the HTTPS URL
+   7. Paste in SEPOLIA_RPC_URL
+
+   Alternative: Infura
+   - URL format: https://sepolia.infura.io/v3/YOUR_PROJECT_ID
+
+B. Private Key
+   1. Open MetaMask
+   2. Click on account menu (three dots)
+   3. Account details → Show private key
+   4. Enter password
+   5. Copy private key (WITHOUT 0x prefix)
+   6. Paste in PRIVATE_KEY
+   
+   ⚠️  SECURITY WARNING:
+   - Use a TEST WALLET only!
+   - Never use your mainnet wallet
+   - Never share this key
+   - Never commit .env to git
+
+C. Etherscan API Key (Optional, for verification)
+   1. Go to: https://etherscan.io/
+   2. Sign up / Log in
+   3. My Profile → API Keys
+   4. Create new API key
+   5. Copy key
+   6. Paste in ETHERSCAN_API_KEY
+
+
+STEP 3: Get Sepolia ETH
+------------------------
+You need at least 0.05 ETH on Sepolia testnet (~0.08 ETH recommended)
+
+Faucets:
+- https://sepoliafaucet.com/
+- https://www.alchemy.com/faucets/ethereum-sepolia
+- https://faucet.quicknode.com/ethereum/sepolia
+
+Check your balance on:
+https://sepolia.etherscan.io/
+
+
+STEP 4: Verify Setup
+--------------------
+Run this to check your balance:
+
+  npx hardhat run scripts/check-balance.ts --network sepolia
+
+You should see your ETH balance.
+
+
+STEP 5: Deploy
+--------------
+  yarn deploy:sepolia
+
+
+STEP 6: Test
+------------
+  yarn test:sepolia
+
+
+STEP 7: Verify (Optional)
+--------------------------
+  yarn verify:sepolia
+
+
+=================================================================
+              READY TO DEPLOY? FOLLOW THESE STEPS:
+=================================================================
+
+1. ✅ Created .env file with your keys
+2. ✅ Got Sepolia ETH from faucet (at least 0.05 ETH)
+3. ✅ Checked balance
+
+Now run:
+  yarn deploy:sepolia
+
+Then:
+  yarn test:sepolia
+
+=================================================================
+
