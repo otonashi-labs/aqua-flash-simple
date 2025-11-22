@@ -65,6 +65,30 @@ const func: DeployFunction = async function (hre: any) {
     const flashLoanExecutorAddress = await flashLoanExecutor.getAddress();
     console.log('FlashLoanExecutor deployed to:', flashLoanExecutorAddress);
 
+    // Deploy DualFlashLoan contract
+    console.log('\nDeploying DualFlashLoan contract...');
+    const dualFlashLoan = await deployAndGetContract({
+        contractName: 'DualFlashLoan',
+        constructorArgs: [aquaAddress],
+        deployer: deployer,
+        deployments,
+        skipVerify: true,
+    });
+    const dualFlashLoanAddress = await dualFlashLoan.getAddress();
+    console.log('DualFlashLoan deployed to:', dualFlashLoanAddress);
+
+    // Deploy DualFlashLoanExecutor for testing
+    console.log('\nDeploying DualFlashLoanExecutor contract...');
+    const dualFlashLoanExecutor = await deployAndGetContract({
+        contractName: 'DualFlashLoanExecutor',
+        constructorArgs: [],
+        deployer: deployer,
+        deployments,
+        skipVerify: true,
+    });
+    const dualFlashLoanExecutorAddress = await dualFlashLoanExecutor.getAddress();
+    console.log('DualFlashLoanExecutor deployed to:', dualFlashLoanExecutorAddress);
+
     // Deploy SwapExecutor (resolver) contract only if DEPLOY_RESOLVER is set
     if (process.env.DEPLOY_RESOLVER === 'true') {
         console.log('\nDeploying SwapExecutor contract...');
@@ -88,6 +112,8 @@ const func: DeployFunction = async function (hre: any) {
     console.log('XYCSwap:', xycSwapAddress);
     console.log('FlashLoan:', flashLoanAddress);
     console.log('FlashLoanExecutor:', flashLoanExecutorAddress);
+    console.log('DualFlashLoan:', dualFlashLoanAddress);
+    console.log('DualFlashLoanExecutor:', dualFlashLoanExecutorAddress);
     console.log('==================================================');
 };
 
