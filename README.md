@@ -6,7 +6,25 @@ A minimalist, production-ready flash loan implementation that achieves **37% gas
 
 This project implements flash loans using the 1inch Aqua protocol with a direct pull/push mechanism, avoiding the complexity and gas overhead of bytecode construction. The result is a simple, auditable implementation that maintains full security guarantees while being significantly more efficient.
 
-**Key Achievement:** Flash loan execution in ~95,000 gas vs ~150,000 gas in SwapVM implementations.
+**Key Achievement:** Flash loan execution in ~95,000 gas vs ~150,000 gas in theoretical SwapVM implementations.
+
+## Motivation
+
+While platforms like Aave provide flash loans, their token coverage is inherently limited. This implementation aims to fill a critical market gap:
+
+**The Problem:**
+- Aave and similar platforms only support a limited set of tokens
+- Many tokens have expensive pools on Uniswap V3/V4 (high fee tiers)
+- Market participants need flash loans for long-tail tokens
+
+**The Solution:**
+Aqua Flash Loans enable efficient, low-gas flash loans for tokens not listed on traditional lending platforms. This is particularly valuable for:
+- Tokens with high-fee Uniswap pools where borrowing is expensive
+- Long-tail assets without Aave listings
+- Market-making and arbitrage opportunities in emerging markets
+- Protocol-specific tokens that need flash loan functionality
+
+By leveraging Aqua's liquidity infrastructure, this implementation makes flash loans accessible for a broader range of tokens at lower gas costs.
 
 ## Live Deployment (Sepolia Testnet)
 
@@ -20,11 +38,11 @@ All contracts are verified on both **Etherscan** and **Sourcify** for maximum tr
 
 ## Implementation Approach
 
-### Direct vs SwapVM Comparison
+### Direct vs Theoretical SwapVM Comparison
 
-Traditional flash loan implementations using SwapVM require building complex bytecode programs with multiple opcodes and instructions. This approach:
+A theoretical SwapVM-based approach (explored in the `aqua-flash` repository) would require building complex bytecode programs with multiple opcodes and instructions. After experimentation, the decision was made to pursue a simpler direct approach for better gas efficiency.
 
-**SwapVM Approach:**
+**Theoretical SwapVM Approach (from aqua-flash):**
 ```solidity
 // Requires ProgramBuilder, opcodes, instruction encoding
 Program memory program = ProgramBuilder.init(_opcodes());
@@ -35,13 +53,15 @@ bytes memory bytecode = bytes.concat(
 // Complex trait building, multiple callbacks, pre/post hooks...
 ```
 
-**Our Direct Approach:**
+**Our Direct Approach (aqua-flash-simple):**
 ```solidity
 // Simple, direct Aqua interaction
 AQUA.pull(strategy.maker, strategyHash, strategy.token, amount, receiver);
 bool success = IFlashLoanReceiver(receiver).executeFlashLoan(...);
 IERC20(strategy.token).transferFrom(receiver, strategy.maker, repayAmount);
 ```
+
+**Why Direct is Better for Flash Loans:** Lower gas consumption directly translates to higher profitability for arbitrageurs and better user experience. The simpler the implementation, the lower the gas overhead.
 
 ### Gas Comparison
 
@@ -311,6 +331,51 @@ Flash loans are performance-critical operations where every unit of gas counts:
 4. **Accessibility**: Reduced costs make flash loans viable for smaller operations
 
 Our implementation makes flash loans **more accessible and profitable** by reducing the execution cost by over a third.
+
+## Further Research
+
+This implementation serves as a foundation for several promising research directions:
+
+### 1. Batched Flash Loans for Multiple Tokens
+**Status:** Planned for ETHGlobal Buenos Aires (or later)
+
+Enable borrowing multiple tokens in a single transaction with optimized gas usage. This would be particularly valuable for:
+- Fusion solvers executing complex multi-token arbitrage
+- Market makers rebalancing across multiple pairs
+- Liquidation bots handling diverse collateral types
+
+**Expected Benefits:**
+- Further gas savings through batching (~30-40% reduction vs sequential loans)
+- Atomic multi-token operations
+- Simplified integration for sophisticated market participants
+
+### 2. Block-wise "Credit" Hypothesis
+**Status:** Work in Progress (WIP)
+
+Exploring mechanisms to provide flash-loan-like functionality with block-level credit limits instead of intra-transaction repayment. This could enable:
+- Multi-block arbitrage strategies
+- Reduced gas pressure within single transactions
+- Novel DeFi primitives
+
+**Research Questions:**
+- How to enforce repayment across blocks securely?
+- What collateralization models make sense?
+- Can this be done trustlessly?
+
+### 3. Dynamic Pricing for Flash Loans
+**Status:** Research phase
+
+Implement market-driven fee adjustments based on:
+- Liquidity utilization rates
+- Token volatility
+- Network congestion
+- Historical usage patterns
+
+**Goal:** Create more efficient markets where fees reflect true supply/demand dynamics, optimizing returns for liquidity providers while maintaining competitive rates for borrowers.
+
+---
+
+These research directions aim to push flash loan functionality beyond current limitations while maintaining the simplicity and gas efficiency demonstrated in this implementation.
 
 ## License
 
