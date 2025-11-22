@@ -267,7 +267,7 @@ npx hardhat test test/FlashLoan.test.ts
 ✅ Balance verification  
 ✅ Event emission (`FlashLoanExecuted`)  
 ✅ Multiple strategies  
-✅ Aqua integration
+✅ Aqua integration  
 
 ---
 
@@ -290,7 +290,7 @@ npx hardhat test test/FlashLoan.test.ts
 
 **Interact via Etherscan:**
 - Read Contract: View current state
-- Write Contract: Execute flash loans  
+- Write Contract: Execute flash loans
 - Events: See execution history
 - Code: Verified source code
 
