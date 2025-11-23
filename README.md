@@ -17,8 +17,7 @@ While platforms like Aave provide flash loans, their token coverage is inherentl
 
 **The Problem:**
 - Aave and similar platforms only support a limited set of tokens
-- Many tokens have expensive pools on Uniswap V3/V4 (high fee tiers)
-- Market participants need flash loans for long-tail tokens
+- long-tail tokens typically have high fees on Uniswap V3/V4 in case of doing flash loan there
 
 **The Solution:**
 Aqua Flash Loans enable efficient, low-gas flash loans for tokens not listed on traditional lending platforms. This is particularly valuable for:
