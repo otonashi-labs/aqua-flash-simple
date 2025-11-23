@@ -7,8 +7,8 @@ Production-ready flash loan implementations using direct Aqua integration, with 
 This project implements custom fees flash loans using the 1inch Aqua protocol with a direct pull/push mechanism, avoiding the complexity and gas overhead of bytecode construction. The result is simple, auditable implementations that maintain full security guarantees while being significantly more efficient.
 
 **Key Achievements:**
-- **FlashLoan**: Single-token flash loans in **79,144 gas** (**53% less gas** than Aave V3's 169,084 gas!)
-- **DualFlashLoan**: Dual-token flash loans in **128,207 gas** (19% savings vs sequential)
+- **FlashLoan**: Single-token flash loans in **[79,144 gas](https://sepolia.etherscan.io/tx/0x19a4d3c53b45ed92ce3897624cac664c8e5d0d607d01c8cb304cf4332c63dadd)** (**53% less gas** than Aave V3's [169,084 gas](https://sepolia.etherscan.io/tx/0x2c1507a29d6fd5642cd58c9727a34721dcf90ebfa8e50e80c53df2737f42cbcf)!)
+- **DualFlashLoan**: Dual-token flash loans in **[128,207 gas](https://sepolia.etherscan.io/tx/0x45bed7f1b7cb978f503697f2909bea04b2f829e280436a3d5afe6c10b2c5c44c)** (19% savings vs sequential)
 - **Customizable Fees**: Makers set their own flash loan fee when creating strategies - unlike Aave's fixed 0.05%
 - **Industry Comparison**: Aqua is **2.1x more gas-efficient** than Aave V3 for single-token flash loans
 
