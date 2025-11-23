@@ -8,7 +8,7 @@ This project implements flash loans using the 1inch Aqua protocol with a direct 
 
 **Key Achievements:**
 - **FlashLoan**: Single-token flash loans in **79,144 gas**
-- **DualFlashLoan**: Dual-token flash loans in **128,207 gas** (36% savings vs sequential)
+- **DualFlashLoan**: Dual-token flash loans in **128,207 gas** (19% savings vs sequential)
 
 ## Motivation
 
@@ -78,8 +78,8 @@ IDualFlashLoanReceiver(receiver).executeDualFlashLoan(...);
 | Implementation | Gas Usage | vs Alternative | Use Case |
 |----------------|-----------|----------------|----------|
 | **FlashLoan** | **79,144** | baseline | Single token operations |
-| **DualFlashLoan** | **128,207** | -36% vs 2x sequential | Multi-token arbitrage |
-| 2x Sequential FlashLoan | ~200,000 | baseline | Two separate calls |
+| **DualFlashLoan** | **128,207** | -19% vs 2x sequential | Multi-token arbitrage |
+| 2x Sequential FlashLoan | **158,288** | baseline | Two separate transactions |
 
 The direct approach provides:
 - No bytecode construction overhead
@@ -359,31 +359,21 @@ Gas breakdown:
 
 ### DualFlashLoan (Two Tokens)
 
-**Measured: 128,207 gas (vs 200,288 sequential)**
+**Measured: 128,207 gas**
 
 **Sequential baseline:**
-- 2 × 79,144 (FlashLoan execution) = 158,288 gas
-- 2 × 21,000 (transaction base costs) = 42,000 gas
-- **Total: 200,288 gas**
+- 2 × 79,144 (two separate FlashLoan transactions) = **158,288 gas**
 
-**DualFlashLoan savings breakdown:**
-1. **Single Transaction** (42,000 gas saved)
-   - One transaction instead of two
-   - One base cost vs two
+**Savings analysis:**
+- 158,288 - 128,207 = **30,081 gas saved (19% reduction)**
 
-2. **Optimized Balance Query** (~3,000 gas saved)
-   - One `safeBalances()` call returns both token balances
-   - Eliminates redundant Aqua lookups
+**Why the savings?**
+1. **Optimized Balance Query** - One `safeBalances()` call returns both token balances
+2. **Shared Reentrancy Protection** - One lock for entire dual operation  
+3. **Batched Execution** - Shared setup/teardown logic
+4. **Reduced Overhead** - Single transaction flow instead of two
 
-3. **Shared Reentrancy Protection** (~5,000 gas saved)
-   - One lock for entire dual operation
-   - Avoids duplicate lock/unlock cycles
-
-4. **Batched Execution** (~22,000 gas saved)
-   - Shared setup/teardown
-   - Eliminates duplicate validation steps
-
-**Total Savings: 72,081 gas (36% reduction)**
+The gas savings come from eliminating redundant operations and leveraging Aqua's pair-based `safeBalances()` design, though each transaction must still pay its full execution cost.
 
 ## Technical Specifications
 
@@ -450,7 +440,7 @@ We successfully implemented DualFlashLoan, enabling borrowing of two tokens in a
 - Liquidation bots handling diverse collateral types
 
 **Achieved Benefits:**
-- ✅ 36% gas savings vs sequential flash loans
+- ✅ 19% gas savings vs sequential flash loans
 - ✅ Atomic dual-token operations
 - ✅ Leverages Aqua's `safeBalances()` for optimal pair queries
 - ✅ Production-ready with 29 passing tests

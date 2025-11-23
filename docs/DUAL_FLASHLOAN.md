@@ -251,9 +251,9 @@ yarn test test/DualFlashLoan.test.ts
 **On-Chain Verified Results** (Sepolia):
 - **Dual Flash Loan Execution**: **128,207 gas** ⚡
 - **Asymmetric Borrowing**: **128,197 gas**
-- **Sequential 2x Single Flash Loans**: ~200,000 gas
+- **Sequential 2x Single Flash Loans**: **158,288 gas** (2 × 79,144)
 
-**Savings**: **71,793 gas (36%)** compared to sequential flash loans
+**Savings**: **30,081 gas (19%)** compared to sequential flash loans
 
 **Real Transaction**: [0x45bed7f1b7cb978f503697f2909bea04b2f829e280436a3d5afe6c10b2c5c44c](https://sepolia.etherscan.io/tx/0x45bed7f1b7cb978f503697f2909bea04b2f829e280436a3d5afe6c10b2c5c44c)
 
@@ -263,8 +263,8 @@ yarn test test/DualFlashLoan.test.ts
 |---------|-----------------|---------------|
 | Tokens per loan | 1 | 2 |
 | Gas Cost | **79k** | **128k** |
-| Sequential (2 tokens) | ~200k | N/A |
-| Savings vs Sequential | - | **36%** |
+| Sequential (2 tokens) | **158k** | N/A |
+| Savings vs Sequential | - | **19%** |
 | Balance check | rawBalances | safeBalances (optimized) |
 | Aqua integration | Good | Optimal (pair-based) |
 | Callback complexity | Simple | Medium |
