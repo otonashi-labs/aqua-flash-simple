@@ -10,7 +10,9 @@
     "deploy": "hardhat deploy --network",
     "deploy:localhost": "hardhat deploy --network localhost",
     "deploy:sepolia": "hardhat deploy --network sepolia",
+    "deploy:aave:sepolia": "hardhat deploy --network sepolia --tags aave",
     "test:sepolia": "hardhat run scripts/test-flashloan-sepolia.ts --network sepolia",
+    "test:aave:sepolia": "ts-node scripts/test-aave-simple.ts",
     "verify:sepolia": "hardhat run scripts/verify-contracts.ts --network sepolia",
     "check:sepolia": "hardhat run scripts/check-balance.ts --network sepolia",
     "clean": "rimraf artifacts cache coverage contracts/hardhat-dependency-compiler deployments typechain-types"
