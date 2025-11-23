@@ -492,40 +492,6 @@ deploy/
 └── deploy-dual-flashloan.ts           # DualFlashLoan deployment
 ```
 
-## Why This Matters for Flash Loans
-
-Flash loans are performance-critical operations where every unit of gas counts. Our **53% gas savings vs Aave V3** translates to real economic impact:
-
-### Gas Efficiency Impact
-
-**Example: 100 ETH Flash Loan @ 50 gwei**
-- **Aqua**: 79,144 gas = 0.00396 ETH ($9.50 @ $2,400/ETH)
-- **Aave V3**: 169,084 gas = 0.00845 ETH ($20.28 @ $2,400/ETH)
-- **Savings**: 0.00449 ETH ($10.78 saved per operation) 💰
-
-Over 1,000 operations per month:
-- **Aqua total gas**: 3.96 ETH ($9,504)
-- **Aave total gas**: 8.45 ETH ($20,280)
-- **Monthly savings**: 4.49 ETH ($10,776) 🎯
-
-### When Aqua's Efficiency Matters Most
-
-1. **High-Frequency Operations**: MEV bots executing hundreds of flash loans daily
-2. **Smaller Trades**: Where gas is a larger % of profit (e.g., <10 ETH flash loans)
-3. **High Gas Environments**: When network is congested (>100 gwei), savings 2x
-4. **Long-Tail Tokens**: Tokens not available on Aave where Aqua is the only option
-5. **Complex Strategies**: Gas budget enables more steps in arbitrage chains
-6. **Competitive MEV**: In tight races, lower gas = higher max bid = more wins
-
-### Real-World Use Cases
-
-- **Arbitrage**: Profit margins often <1%; 0.3% gas savings directly improves ROI
-- **Liquidations**: Speed matters; lower gas = faster inclusion in blocks
-- **Composability**: 90k gas saved enables 3-4 extra Uniswap V3 swaps in one transaction
-- **Accessibility**: Makes flash loans economically viable for smaller operations
-
-**Bottom Line:** Aqua makes flash loans **more accessible, more profitable, and more competitive** than industry-standard implementations.
-
 ## Further Research
 
 This implementation serves as a foundation for several promising research directions:
