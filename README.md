@@ -1,13 +1,13 @@
 # Gas-Optimized Flash Loans on Aqua Protocol
 
-Production-ready flash loan implementations using direct Aqua integration, with both single-token and dual-token variants optimized for minimal gas overhead (50+% less gas than Aave V3!)
+Production-ready flash loan implementations using direct Aqua integration, with both single-token and dual-token variants optimized for minimal gas overhead
 
 ## Overview
 
 This project implements flash loans using the 1inch Aqua protocol with a direct pull/push mechanism, avoiding the complexity and gas overhead of bytecode construction. The result is simple, auditable implementations that maintain full security guarantees while being significantly more efficient.
 
 **Key Achievements:**
-- **FlashLoan**: Single-token flash loans in **79,144 gas** (**53% less gas** than Aave V3's 169,084 gas)
+- **FlashLoan**: Single-token flash loans in **79,144 gas** (**53% less gas** than Aave V3's 169,084 gas!)
 - **DualFlashLoan**: Dual-token flash loans in **128,207 gas** (19% savings vs sequential)
 - **Industry Comparison**: Aqua is **2.1x more gas-efficient** than Aave V3 for single-token flash loans
 
