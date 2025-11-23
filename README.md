@@ -9,7 +9,7 @@ This project implements custom fees flash loans using the 1inch Aqua protocol wi
 **Key Achievements:**
 - **FlashLoan**: Single-token flash loans in **79,144 gas** (**53% less gas** than Aave V3's 169,084 gas!)
 - **DualFlashLoan**: Dual-token flash loans in **128,207 gas** (19% savings vs sequential)
-- **Customizable Fees**: Makers set their own fee rates (0-10%) when creating strategies - unlike Aave's fixed 0.05%
+- **Customizable Fees**: Makers set their own flash loan fee when creating strategies - unlike Aave's fixed 0.05%
 - **Industry Comparison**: Aqua is **2.1x more gas-efficient** than Aave V3 for single-token flash loans
 
 ## Motivation
@@ -26,7 +26,7 @@ Aqua Flash Loans enable efficient, low-gas flash loans for tokens not listed on 
 - Long-tail assets without Aave listings
 - Market-making and arbitrage opportunities in emerging markets
 - Protocol-specific tokens that need flash loan functionality
-- **Customizable fee structures** - makers choose their own rates (0-10%) when providing liquidity
+- **Customizable fee structures** - makers choose their own flash loan fee when providing liquidity
 
 By leveraging Aqua's liquidity infrastructure, this implementation makes flash loans accessible for a broader range of tokens at lower gas costs, with flexible fee pricing determined by individual liquidity providers.
 
@@ -124,7 +124,7 @@ The direct approach provides:
 
 **Aqua's Advantages:**
 - ✅ **Direct liquidity access** - No pool intermediary
-- ✅ **Customizable fees** - Makers set their own rates (0-10%) when creating strategies
+- ✅ **Customizable fees** - Makers set their own flash loan fee when creating strategies
 - ✅ **Transient storage** - Reentrancy guards with zero permanent storage cost (EIP-1153)
 - ✅ **Purpose-built** - Optimized specifically for flash loan use case
 - ✅ **Minimal state changes** - Only what's necessary for the transaction
