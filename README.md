@@ -359,23 +359,31 @@ Gas breakdown:
 
 ### DualFlashLoan (Two Tokens)
 
-1. **Optimized Balance Queries** (~3,000 gas saved)
-   - Sequential: Two separate balance lookups
-   - Dual: One `safeBalances()` call returns both
+**Measured: 128,207 gas (vs 200,288 sequential)**
 
-2. **Single Transaction** (~21,000 gas saved)
-   - Sequential: Two transaction base costs
-   - Dual: One transaction
+**Sequential baseline:**
+- 2 × 79,144 (FlashLoan execution) = 158,288 gas
+- 2 × 21,000 (transaction base costs) = 42,000 gas
+- **Total: 200,288 gas**
 
-3. **Shared Reentrancy Check** (~5,000 gas saved)
-   - Sequential: Two separate lock checks
-   - Dual: One lock for entire operation
+**DualFlashLoan savings breakdown:**
+1. **Single Transaction** (42,000 gas saved)
+   - One transaction instead of two
+   - One base cost vs two
 
-4. **Batched Execution** (~43,000 gas saved)
-   - Sequential: Two complete flash loan flows
-   - Dual: Shared setup/teardown
+2. **Optimized Balance Query** (~3,000 gas saved)
+   - One `safeBalances()` call returns both token balances
+   - Eliminates redundant Aqua lookups
 
-**Total Savings: ~72,000 gas vs sequential (36% reduction)**
+3. **Shared Reentrancy Protection** (~5,000 gas saved)
+   - One lock for entire dual operation
+   - Avoids duplicate lock/unlock cycles
+
+4. **Batched Execution** (~22,000 gas saved)
+   - Shared setup/teardown
+   - Eliminates duplicate validation steps
+
+**Total Savings: 72,081 gas (36% reduction)**
 
 ## Technical Specifications
 
