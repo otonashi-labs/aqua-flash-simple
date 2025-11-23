@@ -4,7 +4,7 @@ A simple, gas-optimized flash loan implementation using Aqua protocol.
 
 ## Overview
 
-This implementation provides a blazingly simple flash loan mechanism that allows users to borrow tokens from liquidity providers with minimal gas overhead. Unlike complex implementations using SwapVM bytecode, this uses Aqua's native pull/push mechanism directly.
+This implementation provides a blazingly simple flash loan mechanism that allows users to borrow tokens from liquidity providers with minimal gas overhead. It uses Aqua's native pull/push mechanism directly for optimal efficiency.
 
 ## Key Features
 
@@ -178,16 +178,19 @@ yarn test test/FlashLoan.test.ts
 
 All 23 tests pass ✅
 
-## Comparison with Complex Implementation
+## Why This Approach
 
-| Feature | Simple (This) | Complex (SwapVM) |
-|---------|---------------|------------------|
-| Gas Cost | ~80k-100k | ~150k-200k |
-| Code Lines | ~130 | ~300+ |
-| Dependencies | Aqua only | Aqua + SwapVM + ProgramBuilder |
-| Bytecode Build | No | Yes |
-| Callback Type | Direct | Via SwapVM hooks |
-| Reentrancy | Transient storage | Storage slots |
+| Feature | This Implementation |
+|---------|---------------------|
+| Gas Cost | **79,144 gas** (measured on-chain) |
+| Code Lines | ~130 lines |
+| Dependencies | Aqua only |
+| Bytecode Build | No - direct calls |
+| Callback Type | Direct interface |
+| Reentrancy | Transient storage (EIP-1153) |
+| Complexity | Minimal - easy to audit |
+
+**Note on SwapVM:** SwapVM is designed for swap operations where `tokenIn ≠ tokenOut`. Flash loans require `tokenBorrowed = tokenReturned` (same token), making SwapVM unsuitable due to the `MakerTraitsTokenInAndTokenOutMustBeDifferent()` constraint.
 
 ## Events
 

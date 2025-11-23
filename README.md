@@ -1,13 +1,13 @@
 # Gas-Optimized Flash Loans on Aqua Protocol
 
-Production-ready flash loan implementations achieving **up to 47% gas savings** through direct Aqua integration, with both single-token and dual-token variants.
+Production-ready flash loan implementations using direct Aqua integration, with both single-token and dual-token variants optimized for minimal gas overhead.
 
 ## Overview
 
 This project implements flash loans using the 1inch Aqua protocol with a direct pull/push mechanism, avoiding the complexity and gas overhead of bytecode construction. The result is simple, auditable implementations that maintain full security guarantees while being significantly more efficient.
 
 **Key Achievements:**
-- **FlashLoan**: Single-token flash loans in **79,144 gas** (47% savings vs SwapVM)
+- **FlashLoan**: Single-token flash loans in **79,144 gas**
 - **DualFlashLoan**: Dual-token flash loans in **128,207 gas** (36% savings vs sequential)
 
 ## Motivation
@@ -46,22 +46,18 @@ All contracts verified on both **Etherscan** and **Sourcify** for maximum transp
 
 ## Implementation Approach
 
-### Direct vs Theoretical SwapVM Comparison
+### Direct Aqua Integration
 
-A theoretical SwapVM-based approach (explored in the `aqua-flash` repository) would require building complex bytecode programs with multiple opcodes and instructions. After experimentation, the decision was made to pursue simpler direct approaches for better gas efficiency.
+Flash loans require a unique pattern: borrow and return the **same token** within one transaction. This makes them fundamentally different from typical swap operations.
 
-**Theoretical SwapVM Approach (from aqua-flash):**
-```solidity
-// Requires ProgramBuilder, opcodes, instruction encoding
-Program memory program = ProgramBuilder.init(_opcodes());
-bytes memory bytecode = bytes.concat(
-    program.build(_flatFeeAmountInXD, FeeArgsBuilder.buildFlatFee(feeBps)),
-    program.build(_xycSwapXD)
-);
-// Complex trait building, multiple callbacks, pre/post hooks...
-```
+**Why Not SwapVM?**
 
-**Our Direct Approaches:**
+While SwapVM is excellent for swap operations, it's **not suitable for flash loans** because:
+- SwapVM enforces `tokenIn ≠ tokenOut` (throws `MakerTraitsTokenInAndTokenOutMustBeDifferent()`)
+- Flash loans need `tokenBorrowed = tokenReturned` (same token in and out)
+- Additional complexity overhead from bytecode construction would be wasteful
+
+**Our Direct Approach:**
 ```solidity
 // FlashLoan: Simple, direct Aqua interaction
 AQUA.pull(strategy.maker, strategyHash, strategy.token, amount, receiver);
@@ -75,22 +71,21 @@ AQUA.pull(maker, hash, token1, amount1, receiver);
 IDualFlashLoanReceiver(receiver).executeDualFlashLoan(...);
 ```
 
-**Why Direct is Better:** Lower gas consumption directly translates to higher profitability for arbitrageurs and better user experience.
+**Why Direct is Optimal:** Minimal abstraction layers, gas-efficient, and perfectly suited for flash loan semantics where the borrowed token equals the repaid token.
 
 ### Gas Comparison
 
 | Implementation | Gas Usage | vs Alternative | Use Case |
 |----------------|-----------|----------------|----------|
-| **FlashLoan** | **79,144** | -47% vs SwapVM | Single token operations |
+| **FlashLoan** | **79,144** | baseline | Single token operations |
 | **DualFlashLoan** | **128,207** | -36% vs 2x sequential | Multi-token arbitrage |
-| SwapVM-based | ~150,000 | baseline | (theoretical) |
 | 2x Sequential FlashLoan | ~200,000 | baseline | Two separate calls |
 
-The direct approaches eliminate:
-- Bytecode construction overhead
-- Multiple opcode execution layers
-- Complex callback routing
-- Unnecessary abstraction layers
+The direct approach provides:
+- No bytecode construction overhead
+- Simple, auditable code paths
+- Efficient callback mechanism
+- Minimal gas consumption per operation
 
 ## Core Implementations
 
@@ -348,23 +343,19 @@ npx hardhat deploy --network sepolia --tags DualFlashLoan
 
 ### FlashLoan (Single Token)
 
-1. **No Bytecode Construction** (~10,000 gas saved)
-   - SwapVM: Builds program with opcodes at runtime
-   - Direct: Uses simple function calls
+**Measured: 79,144 gas**
 
-2. **Single Call Path** (~20,000 gas saved)
-   - SwapVM: Multiple internal dispatches through instruction router
-   - Direct: Direct function execution
+Gas breakdown:
+1. **Direct Aqua Integration** - No bytecode construction overhead
+2. **Single Call Path** - Direct function execution without routing
+3. **Simple State Management** - Straightforward struct parameters
+4. **Minimal Callbacks** - One callback function with clear semantics
+5. **Transient Storage** - Reentrancy guard using transient storage (EIP-1153)
 
-3. **Simpler State Management** (~15,000 gas saved)
-   - SwapVM: Complex trait encoding/decoding
-   - Direct: Simple struct parameters
-
-4. **Fewer External Calls** (~10,000 gas saved)
-   - SwapVM: Multiple callback hooks (pre/post transfer)
-   - Direct: One callback function
-
-**Total Savings: ~70,856 gas per flash loan (47% reduction)**
+**Why This is Optimal:**
+- Flash loans are fundamentally different from swaps (same token in/out)
+- Direct Aqua pull/push is the most efficient pattern for this use case
+- No unnecessary abstraction layers that would add gas overhead
 
 ### DualFlashLoan (Two Tokens)
 

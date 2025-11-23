@@ -192,9 +192,8 @@ Execution Time: 573ms
 | Operation | Gas Used | vs Alternative |
 |-----------|----------|----------------|
 | **DualFlashLoan** | **128,207** | -36% vs 2x Single |
-| FlashLoan (Single) | **79,144** | -47% vs SwapVM |
+| FlashLoan (Single) | **79,144** | baseline |
 | 2x Sequential FlashLoan | ~200,000 | baseline (includes TX overhead) |
-| SwapVM-based (theoretical) | ~150,000 | reference |
 
 ### Key Metrics
 
