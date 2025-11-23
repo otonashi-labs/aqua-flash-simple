@@ -46,7 +46,7 @@ All contracts verified on both **Etherscan** and **Sourcify** for maximum transp
 **On-Chain Proofs:**
 - **Aqua FlashLoan**: [79,144 gas](https://sepolia.etherscan.io/tx/0x19a4d3c53b45ed92ce3897624cac664c8e5d0d607d01c8cb304cf4332c63dadd) ⚡ (fee: 0.09% - customizable by maker)
 - **Aave V3 FlashLoan**: [169,084 gas](https://sepolia.etherscan.io/tx/0x2c1507a29d6fd5642cd58c9727a34721dcf90ebfa8e50e80c53df2737f42cbcf) (fee: 0.05% - fixed)
-- **Aqua DualFlashLoan**: [128,207 gas](https://sepolia.etherscan.io/tx/0x45bed7f1b7cb978f503697f2909bea04b2f829e280436a3d5afe6c10b2c5c44c) for 2 tokens! (with customizable fee as well!)
+- **Aqua DualFlashLoan**: [128,207 gas](https://sepolia.etherscan.io/tx/0x45bed7f1b7cb978f503697f2909bea04b2f829e280436a3d5afe6c10b2c5c44c) for 2 tokens! (fee: 0.09% - customizable by maker)
 
 **Gas Savings: Aqua uses 53% less gas than Aave V3** (89,940 gas saved per flash loan) 🎯
 
