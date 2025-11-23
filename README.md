@@ -81,12 +81,14 @@ IDualFlashLoanReceiver(receiver).executeDualFlashLoan(...);
 
 | Implementation | Gas Usage | vs Aave V3 | vs Alternative | Use Case |
 |----------------|-----------|------------|----------------|----------|
-| **Aqua FlashLoan** | **79,144** | **-53.2%** 🏆 | baseline | Single token operations |
+| **Aqua FlashLoan** | **79,144** | **-53.2%** | baseline | Single token operations |
 | **Aave V3 FlashLoan** | **169,084** | baseline | +113.6% | Industry standard |
-| **Aqua DualFlashLoan** | **128,207** | **-24.2%** | -19% vs 2x sequential | Multi-token arbitrage |
+| **Aqua DualFlashLoan** | **128,207** | **-62.1%** | -19% vs 2x sequential | Multi-token arbitrage |
 | 2x Sequential Aqua | **158,288** | **-6.4%** | baseline | Two separate transactions |
 
 **Key Insight:** Aqua's direct integration approach saves **89,940 gas** (53.2%) compared to Aave V3's pool-based architecture.
+
+**-62.1%** is calculated for **per token flash loan**
 
 The direct approach provides:
 - **53% gas savings vs Aave V3** (169,084 → 79,144 gas)
