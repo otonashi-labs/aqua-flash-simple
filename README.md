@@ -4,11 +4,12 @@ Production-ready flash loan implementations using direct Aqua integration, with 
 
 ## Overview
 
-This project implements flash loans using the 1inch Aqua protocol with a direct pull/push mechanism, avoiding the complexity and gas overhead of bytecode construction. The result is simple, auditable implementations that maintain full security guarantees while being significantly more efficient.
+This project implements custom fees flash loans using the 1inch Aqua protocol with a direct pull/push mechanism, avoiding the complexity and gas overhead of bytecode construction. The result is simple, auditable implementations that maintain full security guarantees while being significantly more efficient.
 
 **Key Achievements:**
 - **FlashLoan**: Single-token flash loans in **79,144 gas** (**53% less gas** than Aave V3's 169,084 gas!)
 - **DualFlashLoan**: Dual-token flash loans in **128,207 gas** (19% savings vs sequential)
+- **Customizable Fees**: Makers set their own fee rates (0-10%) when creating strategies - unlike Aave's fixed 0.05%
 - **Industry Comparison**: Aqua is **2.1x more gas-efficient** than Aave V3 for single-token flash loans
 
 ## Motivation
@@ -25,8 +26,9 @@ Aqua Flash Loans enable efficient, low-gas flash loans for tokens not listed on 
 - Long-tail assets without Aave listings
 - Market-making and arbitrage opportunities in emerging markets
 - Protocol-specific tokens that need flash loan functionality
+- **Customizable fee structures** - makers choose their own rates (0-10%) when providing liquidity
 
-By leveraging Aqua's liquidity infrastructure, this implementation makes flash loans accessible for a broader range of tokens at lower gas costs.
+By leveraging Aqua's liquidity infrastructure, this implementation makes flash loans accessible for a broader range of tokens at lower gas costs, with flexible fee pricing determined by individual liquidity providers.
 
 ## Live Deployment (Sepolia Testnet)
 
@@ -42,8 +44,8 @@ By leveraging Aqua's liquidity infrastructure, this implementation makes flash l
 All contracts verified on both **Etherscan** and **Sourcify** for maximum transparency.
 
 **On-Chain Proofs:**
-- **Aqua FlashLoan**: [79,144 gas](https://sepolia.etherscan.io/tx/0x19a4d3c53b45ed92ce3897624cac664c8e5d0d607d01c8cb304cf4332c63dadd) ⚡
-- **Aave V3 FlashLoan**: [169,084 gas](https://sepolia.etherscan.io/tx/0x2c1507a29d6fd5642cd58c9727a34721dcf90ebfa8e50e80c53df2737f42cbcf) (for comparison)
+- **Aqua FlashLoan**: [79,144 gas](https://sepolia.etherscan.io/tx/0x19a4d3c53b45ed92ce3897624cac664c8e5d0d607d01c8cb304cf4332c63dadd) ⚡ (fee: 0.09% - customizable by maker)
+- **Aave V3 FlashLoan**: [169,084 gas](https://sepolia.etherscan.io/tx/0x2c1507a29d6fd5642cd58c9727a34721dcf90ebfa8e50e80c53df2737f42cbcf) (fee: 0.05% - fixed)
 - **Aqua DualFlashLoan**: [128,207 gas](https://sepolia.etherscan.io/tx/0x45bed7f1b7cb978f503697f2909bea04b2f829e280436a3d5afe6c10b2c5c44c) for 2 tokens!
 
 **Gas Savings: Aqua uses 53% less gas than Aave V3** (89,940 gas saved per flash loan) 🎯
@@ -122,6 +124,7 @@ The direct approach provides:
 
 **Aqua's Advantages:**
 - ✅ **Direct liquidity access** - No pool intermediary
+- ✅ **Customizable fees** - Makers set their own rates (0-10%) when creating strategies
 - ✅ **Transient storage** - Reentrancy guards with zero permanent storage cost (EIP-1153)
 - ✅ **Purpose-built** - Optimized specifically for flash loan use case
 - ✅ **Minimal state changes** - Only what's necessary for the transaction
@@ -141,9 +144,11 @@ contract FlashLoan is AquaApp {
     struct Strategy {
         address maker;      // Liquidity provider
         address token;      // Token to borrow
-        uint256 feeBps;     // Fee (0-1000 bps, max 10%)
+        uint256 feeBps;     // Fee in basis points (0-1000 bps, max 10%)
         bytes32 salt;       // Unique identifier
     }
+    
+    // Maker sets feeBps when calling aqua.ship() to provide liquidity
 
     function flashLoan(
         Strategy calldata strategy,
@@ -183,9 +188,11 @@ contract DualFlashLoan is AquaApp {
         address maker;
         address token0;     // Must be < token1
         address token1;     // Must be > token0
-        uint256 feeBps;
+        uint256 feeBps;     // Customizable fee (0-1000 bps, max 10%)
         bytes32 salt;
     }
+    
+    // Maker chooses feeBps when creating strategy via aqua.ship()
 
     function dualFlashLoan(
         Strategy calldata strategy,
@@ -267,9 +274,10 @@ contract DualFlashLoan is AquaApp {
 Both implementations include:
 - ✅ **Reentrancy Protection**: Uses Aqua's transient storage-based guards (no permanent storage overhead)
 - ✅ **Balance Verification**: Checks available liquidity before execution
-- ✅ **Fee Validation**: Maximum 10% cap on fees
+- ✅ **Fee Validation**: Maximum 10% cap on fees (configurable per strategy by maker)
 - ✅ **Strategy Isolation**: Each strategy has independent locks
 - ✅ **No Admin Keys**: Fully decentralized, no privileged access
+- ✅ **Flexible Fee Structure**: Makers set their own rates (0-1000 bps) when providing liquidity
 
 DualFlashLoan additionally enforces:
 - ✅ **Token Ordering**: Validates token0 < token1 for consistency with Aqua's pair design
@@ -340,19 +348,21 @@ contract ArbitrageBot is IFlashLoanReceiver {
     function executeFlashLoan(
         address token,
         uint256 amount,
-        uint256 fee,
+        uint256 fee,           // Fee set by maker when they created strategy
         address initiator,
         bytes calldata params
     ) external override returns (bool) {
         // Execute arbitrage logic
         // ...
         
-        // Approve repayment
+        // Approve repayment (principal + maker's chosen fee)
         IERC20(token).approve(msg.sender, amount + fee);
         return true;
     }
 }
 ```
+
+**Note:** Makers set their fee rate (e.g., 9 bps = 0.09%) when calling `aqua.ship()` to provide liquidity for the strategy.
 
 ### Dual Token Flash Loan
 
@@ -363,8 +373,8 @@ contract TriangularArbitrage is IDualFlashLoanReceiver {
         address token1,
         uint256 amount0,
         uint256 amount1,
-        uint256 fee0,
-        uint256 fee1,
+        uint256 fee0,          // Maker's chosen fee for token0
+        uint256 fee1,          // Maker's chosen fee for token1
         address initiator,
         bytes calldata params
     ) external override returns (bool) {
@@ -372,13 +382,15 @@ contract TriangularArbitrage is IDualFlashLoanReceiver {
         // 2. Swap tokenX → token1 on Sushiswap
         // 3. Profit from price difference
         
-        // Approve repayments
+        // Approve repayments (principal + maker's fees)
         IERC20(token0).approve(msg.sender, amount0 + fee0);
         IERC20(token1).approve(msg.sender, amount1 + fee1);
         return true;
     }
 }
 ```
+
+**Note:** Both fees are customizable and set by the maker when providing liquidity via `aqua.ship()`. The same fee rate applies to both tokens in the strategy.
 
 ## Installation & Development
 
@@ -482,6 +494,9 @@ contracts/
 ├── DualFlashLoan.sol                  # Dual-token implementation (147 lines)
 ├── IDualFlashLoanReceiver.sol         # Dual flash loan interface
 ├── DualFlashLoanExecutor.sol          # Reference implementation
+├── AaveV3FlashLoanExecutor.sol        # Aave V3 comparison executor
+├── IAaveV3Pool.sol                    # Aave V3 Pool interface
+├── IFlashLoanSimpleReceiver.sol       # Aave V3 callback interface
 └── Reentrant*Attacker.sol             # Security testing contracts
 
 test/
@@ -489,9 +504,21 @@ test/
 ├── DualFlashLoan.test.ts              # 29 comprehensive tests
 └── XYCSwap.test.ts                    # 3 AMM tests
 
+scripts/
+├── test-flashloan-sepolia.ts          # Aqua flash loan test
+├── test-aave-simple.ts                # Aave V3 flash loan test
+├── send-usdc-to-executor.ts           # Helper: fund Aave executor
+└── check-usdc-balances.ts             # Helper: check USDC balances
+
 deploy/
 ├── deploy-aqua.ts                     # Main deployment
-└── deploy-dual-flashloan.ts           # DualFlashLoan deployment
+├── deploy-dual-flashloan.ts           # DualFlashLoan deployment
+└── deploy-aave-v3.ts                  # Aave V3 executor deployment
+
+docs/
+├── FLASHLOAN.md                       # Single FlashLoan documentation
+├── DUAL_FLASHLOAN.md                  # DualFlashLoan documentation
+└── AAVE_GAS_COMPARISON.md             # Aave V3 comparison guide
 ```
 
 ## Further Research
